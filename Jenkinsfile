@@ -52,7 +52,7 @@ pipeline {
                 script {
                     sshagent(['production-server-credentials']) {
                         bat """
-                        ssh user@production-server 'docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && cd /path/to/docker-compose && docker-compose down && docker-compose up -d'
+                        ssh your-username@192.168.10.142 'docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && cd /path/to/docker-compose && docker-compose down && docker-compose up -d'
                         """
                     }
                 }
