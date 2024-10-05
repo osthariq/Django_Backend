@@ -47,6 +47,20 @@ pipeline {
             }
         }
 
+        stage('Check SSH Agent') {
+            steps {
+                script {
+                    sshagent(['production-server-credentials']) {
+                        bat """
+                        echo SSH_AGENT_PID: %SSH_AGENT_PID%
+                        echo SSH_AUTH_SOCK: %SSH_AUTH_SOCK%
+                        """
+            }
+        }
+    }
+}
+
+
         stage('Deploy to Production') {
     steps {
         script {
