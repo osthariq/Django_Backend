@@ -48,12 +48,18 @@ pipeline {
         }
 
         stage('Deploy to Production') {
-            steps {
-                script {
-                    sshagent(['production-server-credentials']) {
-                        bat """
-                        ssh THARIQ@192.168.10.142 'docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && cd /path/to/docker-compose && docker-compose down && docker-compose up -d'
-                        """
+    steps {
+        script {
+            sshagent(['production-server-credentials']) {
+                bat """
+                ssh THARIQ@192.168.10.142 \"
+                docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && \
+                cd /path/to/docker-compose && \
+                docker-compose down && \
+                docker-compose up -d
+                \"
+                """
+                        
                     }
                 }
             }
