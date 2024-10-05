@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "thariqos/django_backend"  // Replace with your DockerHub username and image name
+        DOCKER_IMAGE = "thariqos/django_backend"  // Replace with your DockerHub image name
         DOCKER_TAG = "latest"
         REGISTRY_CREDENTIALS = credentials('dockerhub-credentials')  // Store DockerHub credentials in Jenkins
     }
@@ -18,8 +18,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install dependencies in a temporary container (optional step if you want to verify dependencies)
-                    sh 'docker run --rm -v $(pwd):/app -w /app python:3.12-slim pip install -r requirements.txt'
+                    // Install dependencies using pip in Windows
+                    bat 'docker run --rm -v %cd%:/app -w /app python:3.12-slim pip install -r requirements.txt'
                 }
             }
         }
@@ -27,8 +27,8 @@ pipeline {
         stage('Run Django Tests') {
             steps {
                 script {
-                    // Run your Django tests inside the Docker container
-                    sh 'docker run --rm -v $(pwd):/app -w /app python:3.12-slim python manage.py test'
+                    // Run Django tests on Windows using Docker
+                    bat 'docker run --rm -v %cd%:/app -w /app python:3.12-slim python manage.py test'
                 }
             }
         }
@@ -36,8 +36,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image of your Django project
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    // Build Docker image using Windows-compatible commands
+                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
@@ -45,9 +45,9 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Log in to DockerHub and push the image
+                    // Push Docker image to DockerHub
                     docker.withRegistry('', 'dockerhub-credentials') {
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        bat "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
@@ -56,9 +56,10 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 script {
-                    // Use SSH to access the production server and deploy
+                    // Use SSH (or a Windows equivalent) to deploy on production
+                    // This assumes that SSH agent is configured and working on the Windows machine
                     sshagent (['production-server-credentials']) {
-                        sh """
+                        bat """
                         ssh user@production-server 'docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && cd /path/to/docker-compose && docker-compose down && docker-compose up -d'
                         """
                     }
@@ -69,8 +70,7 @@ pipeline {
 
     post {
         always {
-            // Clean up the workspace after the pipeline
-            cleanWs()
+            cleanWs()  // Clean workspace after build
         }
     }
 }
