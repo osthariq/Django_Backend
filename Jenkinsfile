@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "thariqos/django_backend"  // Replace with your DockerHub image name
+        DOCKER_IMAGE = "mohamedmass1245/django_backend"  // Replace with your DockerHub image name
         DOCKER_TAG = "latest"
         REGISTRY_CREDENTIALS = credentials('dockerhub-credentials')  // Store DockerHub credentials in Jenkins
     }
@@ -66,7 +66,7 @@ pipeline {
         script {
             sshagent(['production-server-credentials']) {
                 bat """
-                ssh THARIQ@192.168.10.142 \"
+                ssh Mohamed Ismail@192.168.10.124 \"
                 docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} && \
                 cd /path/to/docker-compose && \
                 docker-compose down && \
